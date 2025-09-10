@@ -6,6 +6,13 @@ class UntangleGame
       primitive_marker: :solid,
       x: 0, y: 0, w: 1, h: 1,
     }
+    @outputs[:line_red].w = 1
+    @outputs[:line_red].h = 1
+    @outputs[:line_red].primitives << {
+      primitive_marker: :solid,
+      x: 0, y: 0, w: 1, h: 1,
+      r: 255, g: 0, b: 0,
+    }
 
     @outputs[:background].w = @screen_width
     @outputs[:background].h = @screen_height
@@ -32,8 +39,11 @@ class UntangleGame
   end
 
   def render_edges
+    crossed = intersecting_edges
     @edges.each do |p1, p2|
-      @primitives << thick_line(p1.x, p1.y, p2.x, p2.y)
+      # For debug: make intersecting edges red
+      path = crossed.include?([p1, p2]) ? :line_red : :line
+      @primitives << thick_line(p1.x, p1.y, p2.x, p2.y, path: path)
     end
   end
 
@@ -47,7 +57,7 @@ class UntangleGame
     end
   end
 
-  def thick_line(x1, y1, x2, y2, thickness: LINE_THICKNESS)
+  def thick_line(x1, y1, x2, y2, thickness: LINE_THICKNESS, path: :line)
     dx = x2 - x1
     dy = y2 - y1
     length = Math.sqrt((dx * dx) + (dy * dy))
@@ -58,7 +68,7 @@ class UntangleGame
       w: length, h: thickness,
       angle: angle,
       angle_anchor_x: 0, angle_anchor_y: 0,
-      path: :line,
+      path: path,
     }
   end
 end
