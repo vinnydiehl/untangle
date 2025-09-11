@@ -12,6 +12,5 @@ class UntangleGame
 
   def game_tick
     handle_mouse_inputs
-    p @node_held
   end
 end
