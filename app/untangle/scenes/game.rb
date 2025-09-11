@@ -10,6 +10,8 @@ class UntangleGame
 
     generate_game
     render_game_init
+
+    play_sound(:game_start)
   end
 
   def game_tick

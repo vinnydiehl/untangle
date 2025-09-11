@@ -5,6 +5,7 @@ class UntangleGame
 
     if @mouse.key_down?(:left) && (@node_held = node_under_mouse)
       @node_orig_pos = @nodes[@node_held]
+      play_sound(:pickup)
     end
 
     if @node_held
@@ -16,8 +17,10 @@ class UntangleGame
         # Check if we dragged the node off the screen
         if !@mouse.intersect_rect?([0, 0, @screen_width, @screen_height])
           animate_move_node(@node_held, @node_orig_pos, RETURN_ANIMATION_DURATION)
+          play_sound(:rebound)
         else
           @game_solved = intersecting_edges.empty?
+          play_sound(@game_solved ? :win : :place)
         end
 
         @node_held = nil

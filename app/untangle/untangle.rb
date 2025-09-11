@@ -39,4 +39,8 @@ class UntangleGame
       @args.gtk.reboot
     end
   end
+
+  def play_sound(name)
+    @args.audio[name] = { input: "sounds/#{name}.mp3" }
+  end
 end
