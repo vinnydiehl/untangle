@@ -40,10 +40,12 @@ class UntangleGame
 
   def render_edges
     crossed = intersecting_edges
-    @edges.each do |p1, p2|
+    @edges.each do |i, j|
+      p1 = @nodes[i]
+      p2 = @nodes[j]
       # For debug: make intersecting edges red
-      path = crossed.include?([p1, p2]) ? :line_red : :line
-      @primitives << thick_line(p1.x, p1.y, p2.x, p2.y, path: path)
+      path = crossed.include?([i, j]) ? :line_red : :line
+      @primitives << thick_line(p1[0], p1[1], p2[0], p2[1], path: path)
     end
   end
 
