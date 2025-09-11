@@ -53,10 +53,20 @@ class UntangleGame
   end
 
   def render_nodes
-    @nodes.each do |node|
+    connected = @node_held ? connected_nodes(@node_held) : []
+    @nodes.each_with_index do |node, i|
+      filename = "node"
+      if @node_held
+        if @node_held == i
+          filename += "_selected"
+        elsif connected.include?(i)
+          filename += "_connected"
+        end
+      end
+
       @primitives << {
         **node_rect(node),
-        path: "sprites/node.png",
+        path: "sprites/#{filename}.png",
       }
     end
   end
@@ -68,6 +78,15 @@ class UntangleGame
       x: x - NODE_RADIUS, y: y - NODE_RADIUS,
       w: NODE_DIAMETER, h: NODE_DIAMETER,
     }
+  end
+
+  # Returns a list of node indices that are connected to the node
+  # at index `i`
+  def connected_nodes(i)
+    @edges.each_with_object([]) do |(u, v), list|
+      list << v if u == i
+      list << u if v == i
+    end
   end
 
   def thick_line(x1, y1, x2, y2, thickness: LINE_THICKNESS, path: :line)
