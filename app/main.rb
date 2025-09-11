@@ -1,10 +1,13 @@
-SCENES = %w[game].freeze
+SCENES = %w[start game].freeze
 
 require "lib/union_find/union_find.rb"
 
-%w[constants generate input movement untangle].each { |f| require "app/untangle/#{f}.rb" }
+%w[colors constants generate input
+   movement untangle].each { |f| require "app/untangle/#{f}.rb" }
 
 %w[scenes render].each { |dir| SCENES.each { |f| require "app/untangle/#{dir}/#{f}.rb" } }
+
+require "app/untangle/render/shared.rb"
 
 def tick(args)
   args.state.game ||= UntangleGame.new(args)

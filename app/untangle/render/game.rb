@@ -13,15 +13,6 @@ class UntangleGame
       x: 0, y: 0, w: 1, h: 1,
       r: 255, g: 0, b: 0,
     }
-
-    @outputs[:background].w = @screen_width
-    @outputs[:background].h = @screen_height
-    @outputs[:background].primitives << {
-      primitive_marker: :solid,
-      x: 0, y: 0,
-      w: @screen_width, h: @screen_height,
-      r: 63, g: 63, b: 63,
-    }
   end
 
   def render_game
@@ -29,14 +20,6 @@ class UntangleGame
     render_timer
     render_edges
     render_nodes
-  end
-
-  def render_background
-    @primitives << {
-      x: 0, y: 0,
-      w: @screen_width, h: @screen_height,
-      path: :background,
-    }
   end
 
   def render_timer

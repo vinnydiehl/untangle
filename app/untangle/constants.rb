@@ -1,13 +1,33 @@
-NODE_COUNT = 10
+# Difficulty levels, based on the following factors:
+#
+#  - :node_count is the number of nodes in the graph
+#  - :max_degree is the maximum number of edges that can be connected
+#                to a given node during generation
+DIFFICULTY = {
+  easy: {
+    node_count: 10,
+    max_degree: 4,
+  },
+  intermediate: {
+    node_count: 20,
+    max_degree: 4,
+  },
+  hard: {
+    node_count: 20,
+    max_degree: 5,
+  },
+  expert: {
+    node_count: 25,
+    max_degree: 6,
+  },
+}
+
 NODE_RADIUS = 16
 NODE_DIAMETER = NODE_RADIUS * 2
 
 # Radius of the circle of nodes centered in the screen
 # after shuffling
 NODE_CIRCLE_RADIUS = 300
-
-# Number of edges that can connect to a single node
-MAX_DEGREE = 4
 
 LINE_THICKNESS = 4
 
@@ -16,3 +36,8 @@ RETURN_ANIMATION_DURATION = 0.1.seconds
 
 TIMER_SIZE = 15
 TIMER_PADDING = 10
+
+CHOICE_BOX_WIDTH = 400
+CHOICE_BOX_HEIGHT = 100
+CHOICES_PADDING = 50
+CHOICE_TEXT_SIZE = 6

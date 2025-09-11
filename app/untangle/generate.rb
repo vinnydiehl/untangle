@@ -8,7 +8,7 @@ class UntangleGame
   # Randomly place the nodes all over the screen.
   def generate_nodes
     @nodes = []
-    until @nodes.size >= NODE_COUNT
+    until @nodes.size >= node_count
       @nodes << loop do
         x = rand(@screen_width)
         y = rand(@screen_height)
@@ -57,20 +57,20 @@ class UntangleGame
       remaining.delete(j)
     end
 
-    # Generate greedy edges up to MAX_DEGREE
+    # Generate greedy edges up to max_degree
     loop do
       added = false
 
       # Sort vertices by current degree so low-degree nodes are prioritized
       (0...n).sort_by { |i| degrees[i] }.each do |j|
         # Skip nodes that have reached the maximum degree
-        next if degrees[j] >= MAX_DEGREE
+        next if degrees[j] >= max_degree
 
         # Find candidate neighbors that are eligible for an edge and
         # sort them by distance.
         # This excludes the current node, nodes at max degree, or existing edges
         candidates = (0...n).reject do |k|
-          k == j || degrees[k] >= MAX_DEGREE || edge_exists?(j, k)
+          k == j || degrees[k] >= max_degree || edge_exists?(j, k)
         end.sort_by { |k| dist2(@nodes[j], @nodes[k]) }
 
         candidates.each do |k|
@@ -230,14 +230,11 @@ class UntangleGame
   end
 
   def shuffle_nodes
-    cx = @screen_width / 2
-    cy = @screen_height / 2
-
     # Make a circle of points centered in the screen
     circle = (0...@nodes.size).map do |i|
-      angle = (2 * Math::PI * i / NODE_COUNT)
+      angle = (2 * Math::PI * i / node_count)
       r = NODE_CIRCLE_RADIUS
-      [cx + Math.cos(angle) * r, cy + Math.sin(angle) * r]
+      [@cx + Math.cos(angle) * r, @cy + Math.sin(angle) * r]
     end
 
     # Repeat the shuffle until there's at least 1 crossed edge, that

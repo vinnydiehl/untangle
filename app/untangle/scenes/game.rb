@@ -10,7 +10,6 @@ class UntangleGame
     @animated_nodes = []
 
     generate_game
-    render_game_init
 
     play_sound(:game_start)
   end
@@ -18,5 +17,13 @@ class UntangleGame
   def game_tick
     run_animation
     handle_mouse_inputs
+  end
+
+  def node_count
+    @difficulty[:node_count]
+  end
+
+  def max_degree
+    @difficulty[:max_degree]
   end
 end
