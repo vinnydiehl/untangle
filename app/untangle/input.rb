@@ -4,13 +4,15 @@ class UntangleGame
       @node_held = node_under_mouse
     end
 
-    if @mouse.key_held?(:left)
-      move_node(@node_held, @mouse.x, @mouse.y)
-    end
+    if @node_held
+      if @mouse.key_held?(:left)
+        move_node(@node_held, @mouse.x, @mouse.y)
+      end
 
-    if @mouse.key_up?(:left)
-      @node_held = nil
-      @game_solved = intersecting_edges.empty?
+      if @mouse.key_up?(:left)
+        @node_held = nil
+        @game_solved = intersecting_edges.empty?
+      end
     end
   end
 
