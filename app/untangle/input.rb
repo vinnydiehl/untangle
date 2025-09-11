@@ -3,6 +3,14 @@ class UntangleGame
     # Don't allow mouse input if we're running an animation
     return if @animated_nodes.any?
 
+    # If the game is solved, click anywhere to start over
+    if @game_solved && @mouse.key_down?(:left) &&
+       @mouse.intersect_rect?([0, 0, @screen_width, @screen_height])
+      set_scene(:start)
+    end
+
+    ### Main game inputs
+
     if @mouse.key_down?(:left) && (@node_held = node_under_mouse)
       @node_orig_pos = @nodes[@node_held]
       play_sound(:pickup)

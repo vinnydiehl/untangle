@@ -20,17 +20,35 @@ class UntangleGame
     render_timer
     render_edges
     render_nodes
+
+    if @game_solved
+      render_solved_message
+      # Render timer again so it's on top of the nodes/edges
+      render_timer
+    end
   end
 
   def render_timer
     @primitives << {
-      x: 0 + TIMER_PADDING,
-      y: @screen_height - TIMER_PADDING,
+      x: 0 + TEXT_PADDING,
+      y: @screen_height - TEXT_PADDING,
       text: format_time(
         # Don't start timer until start animation is over
         [0, ((@timer_end || @ticks) - START_ANIMATION_DURATION)].max
       ),
       size_enum: TIMER_SIZE,
+      r: 255, g: 255, b: 255,
+    }
+  end
+
+  def render_solved_message
+    @primitives << {
+      x: @screen_width - TEXT_PADDING,
+      y: TEXT_PADDING,
+      text: "Click anywhere to go to main menu.",
+      size_enum: SOLVED_MESSAGE_SIZE,
+      alignment_enum: 2,
+      vertical_alignment_enum: 0,
       r: 255, g: 255, b: 255,
     }
   end
