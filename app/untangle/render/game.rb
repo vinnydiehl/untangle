@@ -52,11 +52,19 @@ class UntangleGame
   def render_nodes
     @nodes.each do |node|
       @primitives << {
-        x: node.x - NODE_RADIUS, y: node.y - NODE_RADIUS,
-        w: NODE_DIAMETER, h: NODE_DIAMETER,
+        **node_rect(node),
         path: "sprites/node.png",
       }
     end
+  end
+
+  def node_rect(node)
+    x, y = node
+
+    {
+      x: x - NODE_RADIUS, y: y - NODE_RADIUS,
+      w: NODE_DIAMETER, h: NODE_DIAMETER,
+    }
   end
 
   def thick_line(x1, y1, x2, y2, thickness: LINE_THICKNESS, path: :line)
