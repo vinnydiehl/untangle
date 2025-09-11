@@ -6,7 +6,7 @@ class UntangleGame
 
   # Begin an animated node move. Eases the node towards the `target_coords`.
   def animate_move_node(i, target_coords, duration)
-    @animated_nodes << p([@tick, duration, i, @nodes[i], target_coords])
+    @animated_nodes << [@ticks, duration, i, @nodes[i], target_coords]
   end
 
   def run_animation

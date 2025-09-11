@@ -5,7 +5,7 @@ class UntangleGame
     @args = args
     @state = args.state
 
-    @tick = 0
+    @ticks = 0
 
     @screen_width = args.grid.w
     @screen_height = args.grid.h
@@ -26,7 +26,7 @@ class UntangleGame
   end
 
   def tick
-    @tick = Kernel.tick_count
+    @ticks = Kernel.tick_count
 
     # Save this so that even if the scene changes during the tick, it is
     # still rendered before switching scenes.

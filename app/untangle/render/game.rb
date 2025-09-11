@@ -26,6 +26,7 @@ class UntangleGame
 
   def render_game
     render_background
+    render_timer
     render_edges
     render_nodes
   end
@@ -36,6 +37,25 @@ class UntangleGame
       w: @screen_width, h: @screen_height,
       path: :background,
     }
+  end
+
+  def render_timer
+    @primitives << {
+      x: 0 + TIMER_PADDING,
+      y: @screen_height - TIMER_PADDING,
+      text: format_time(
+        # Don't start timer until start animation is over
+        [0, ((@timer_end || @ticks) - START_ANIMATION_DURATION)].max
+      ),
+      size_enum: TIMER_SIZE,
+      r: 255, g: 255, b: 255,
+    }
+  end
+
+  def format_time(ticks)
+    minutes, seconds = (ticks / 60).divmod(60)
+    minutes.zero? ? format("%.2f", seconds) :
+                    format("%d:%05.2f", minutes, seconds)
   end
 
   def render_edges
