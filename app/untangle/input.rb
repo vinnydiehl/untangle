@@ -10,6 +10,7 @@ class UntangleGame
 
     if @mouse.key_up?(:left)
       @node_held = nil
+      @game_solved = intersecting_edges.empty?
     end
   end
 

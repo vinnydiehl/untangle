@@ -1,5 +1,7 @@
 class UntangleGame
   def game_init
+    @game_solved = false
+
     # Index of node held by the mouse
     @node_held = nil
 

@@ -56,11 +56,16 @@ class UntangleGame
     connected = @node_held ? connected_nodes(@node_held) : []
     @nodes.each_with_index do |node, i|
       filename = "node"
+
+      if @game_solved
+        filename = "node_solved"
+      end
+
       if @node_held
         if @node_held == i
-          filename += "_selected"
+          filename = "node_selected"
         elsif connected.include?(i)
-          filename += "_connected"
+          filename = "node_connected"
         end
       end
 
