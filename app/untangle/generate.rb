@@ -159,12 +159,12 @@ class UntangleGame
   end
 
   # Takes 2 edges and returns whether or not they intersect.
-  def intersect?(e1, e2)
+  def intersect?(e1, e2, nodes: @nodes)
     i1, j1 = e1
     i2, j2 = e2
 
-    p1, q1 = @nodes[i1], @nodes[j1]
-    p2, q2 = @nodes[i2], @nodes[j2]
+    p1, q1 = nodes[i1], nodes[j1]
+    p2, q2 = nodes[i2], nodes[j2]
 
     # If they share a node, not considered intersecting
     return false if [i1, j1].any? { |idx| [i2, j2].include?(idx) }
@@ -222,8 +222,11 @@ class UntangleGame
   end
 
   # Returns an array of all edges which intersect another edge.
-  def intersecting_edges
-    @edges.combination(2).select { |e1, e2| intersect?(e1, e2) }.flatten(1).uniq
+  def intersecting_edges(nodes = @nodes)
+    @edges.combination(2)
+          .select { |e1, e2| intersect?(e1, e2, nodes: nodes) }
+          .flatten(1)
+          .uniq
   end
 
   def shuffle_nodes
@@ -238,16 +241,26 @@ class UntangleGame
     end
 
     # Repeat the shuffle until there's at least 1 crossed edge, that
-    # way we don't start with a solved puzzle
-    until intersecting_edges.size > 1
+    # way we don't start with a solved puzzle. There's a slim chance of
+    # this happening, but you never know.
+    #
+    # We're going to be animating the shuffle, so we need to do this on a
+    # copy of @nodes so that the outer `until` loop can terminate.
+    nodes_copy = @nodes.map(&:dup)
+    until intersecting_edges(nodes_copy).size > 1
       remaining_nodes = (0...@nodes.size).to_a
       remaining_circle_points = circle.dup
 
       until remaining_nodes.none?
         i = remaining_nodes.delete(remaining_nodes.sample)
         x, y = remaining_circle_points.delete(remaining_circle_points.sample)
-        move_node(i, x, y)
+        move_node(i, x, y, nodes: nodes_copy)
       end
+    end
+
+    # We've found the positions, add the animations to the actual @nodes
+    nodes_copy.each_with_index do |node, i|
+      animate_move_node(i, node, START_ANIMATION_DURATION)
     end
   end
 end

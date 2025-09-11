@@ -1,5 +1,8 @@
 class UntangleGame
   def handle_mouse_inputs
+    # Don't allow mouse input if we're running an animation
+    return if @animated_nodes.any?
+
     if @mouse.key_down?(:left) && (@node_held = node_under_mouse)
       @node_orig_pos = @nodes[@node_held]
     end
@@ -10,12 +13,15 @@ class UntangleGame
       end
 
       if @mouse.key_up?(:left)
-        unless @mouse.intersect_rect?([0, 0, @screen_width, @screen_height])
-          move_node(@node_held, *@node_orig_pos)
+        # Check if we dragged the node off the screen
+        if !@mouse.intersect_rect?([0, 0, @screen_width, @screen_height])
+          animate_move_node(@node_held, @node_orig_pos, RETURN_ANIMATION_DURATION)
+        else
+          @game_solved = intersecting_edges.empty?
         end
+
         @node_held = nil
         @node_orig_pos = nil
-        @game_solved = intersecting_edges.empty?
       end
     end
   end

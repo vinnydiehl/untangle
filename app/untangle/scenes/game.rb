@@ -6,11 +6,14 @@ class UntangleGame
     @node_held = nil
     @node_orig_pos = nil
 
+    @animated_nodes = []
+
     generate_game
     render_game_init
   end
 
   def game_tick
+    run_animation
     handle_mouse_inputs
   end
 end
