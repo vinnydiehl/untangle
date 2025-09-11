@@ -1,6 +1,7 @@
 class UntangleGame
   def game_init
     @game_solved = false
+    @timer_start = @ticks
     @timer_end = nil
 
     # Index and original position of node held by the mouse

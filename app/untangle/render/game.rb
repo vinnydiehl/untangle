@@ -34,7 +34,7 @@ class UntangleGame
       y: @screen_height - TEXT_PADDING,
       text: format_time(
         # Don't start timer until start animation is over
-        [0, ((@timer_end || @ticks) - START_ANIMATION_DURATION)].max
+        [0, ((@timer_end || @ticks - @timer_start) - START_ANIMATION_DURATION)].max
       ),
       size_enum: TIMER_SIZE,
       r: 255, g: 255, b: 255,
