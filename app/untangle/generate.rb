@@ -2,23 +2,11 @@ class UntangleGame
   def generate_game
     generate_nodes
     generate_edges
+    shuffle_nodes
   end
 
   # Randomly place the nodes all over the screen.
   def generate_nodes
-    # We're gonna use somthing like this later to rearrange the nodes
-    # into a neat circle
-    #
-    # cx = @screen_width / 2
-    # cy = @screen_height / 2
-    #
-    # # Make a circle of nodes centered in the screen
-    # @nodes = (0...NODE_COUNT).map do |i|
-    #   angle = (2 * Math::PI * i / NODE_COUNT)
-    #   r = 250 # radius
-    #   [cx + Math.cos(angle) * r, cy + Math.sin(angle) * r]
-    # end
-
     @nodes = []
     until @nodes.size >= NODE_COUNT
       @nodes << loop do
@@ -236,5 +224,30 @@ class UntangleGame
   # Returns an array of all edges which intersect another edge.
   def intersecting_edges
     @edges.combination(2).select { |e1, e2| intersect?(e1, e2) }.flatten(1).uniq
+  end
+
+  def shuffle_nodes
+    cx = @screen_width / 2
+    cy = @screen_height / 2
+
+    # Make a circle of points centered in the screen
+    circle = (0...@nodes.size).map do |i|
+      angle = (2 * Math::PI * i / NODE_COUNT)
+      r = NODE_CIRCLE_RADIUS
+      [cx + Math.cos(angle) * r, cy + Math.sin(angle) * r]
+    end
+
+    # Repeat the shuffle until there's at least 1 crossed edge, that
+    # way we don't start with a solved puzzle
+    until intersecting_edges.size > 1
+      remaining_nodes = (0...@nodes.size).to_a
+      remaining_circle_points = circle.dup
+
+      until remaining_nodes.none?
+        i = remaining_nodes.delete(remaining_nodes.sample)
+        x, y = remaining_circle_points.delete(remaining_circle_points.sample)
+        move_node(i, x, y)
+      end
+    end
   end
 end
