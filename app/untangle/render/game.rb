@@ -36,7 +36,7 @@ class UntangleGame
   end
 
   def render_timer
-    time = @timer_end ? @timer_end - @timer_start : @ticks - @timer_start
+    time = @timer_end ? @timer_end : @timer
 
     @primitives << {
       x: 0 + TEXT_PADDING,

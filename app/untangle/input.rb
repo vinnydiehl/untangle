@@ -6,7 +6,7 @@ class UntangleGame
     # If the game is solved, click anywhere to start over
     if @game_solved && @mouse.key_down?(:left) &&
        @mouse.intersect_rect?([0, 0, @screen_width, @screen_height])
-      set_scene(:start)
+      set_scene(:main_menu)
     end
 
     ### Main game inputs
@@ -36,6 +36,12 @@ class UntangleGame
         @node_held = nil
         @node_orig_pos = nil
       end
+    end
+  end
+
+  def handle_keyboard_inputs
+    if @kb.key_down?(:escape)
+      set_scene(:pause_menu)
     end
   end
 
