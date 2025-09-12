@@ -13,6 +13,13 @@ class UntangleGame
       x: 0, y: 0, w: 1, h: 1,
       r: 255, g: 0, b: 0,
     }
+    @outputs[:line_held].w = 1
+    @outputs[:line_held].h = 1
+    @outputs[:line_held].primitives << {
+      primitive_marker: :solid,
+      x: 0, y: 0, w: 1, h: 1,
+      r: 30, g: 30, b: 30,
+    }
   end
 
   def render_game
@@ -60,17 +67,28 @@ class UntangleGame
   end
 
   def render_edges
-    crossed = intersecting_edges
+    @edges.each { |e| render_edge(e, :line) }
 
-    @edges.each do |i, j|
-      p1 = @nodes[i]
-      p2 = @nodes[j]
-
-      # Make intersecting edges red if the I key is held
-      path = crossed.include?([i, j]) && @kb.key_held?(:i) ? :line_red : :line
-
-      @primitives << thick_line(p1[0], p1[1], p2[0], p2[1], path: path)
+    # Render edges connected to the @node_held in a lighter color
+    if @node_held
+      edges_connected_to(@node_held).each { |e| render_edge(e, :line_held) }
     end
+
+    # Hold `i` to highlight intersecting edges red
+    if @kb.key_held?(:i)
+      intersecting_edges.each { |e| render_edge(e, :line_red) }
+    end
+  end
+
+  def render_edge((i, j), path)
+    p1 = @nodes[i]
+    p2 = @nodes[j]
+
+    @primitives << thick_line(p1[0], p1[1], p2[0], p2[1], path: path)
+  end
+
+  def edges_connected_to(i)
+    @edges.select { |e| e.include?(i) }
   end
 
   def render_nodes
