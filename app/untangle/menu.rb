@@ -7,6 +7,7 @@ class Menu
   def initialize(args, choices)
     @primitives = args.outputs.primitives
     @mouse = args.inputs.mouse
+    @audio = args.audio
 
     @screen_width = args.grid.w
     @cx = args.grid.w / 2
@@ -14,9 +15,19 @@ class Menu
     @cy = args.grid.h / 2
 
     @choices = choices
+
+    @sound_played = true
   end
 
   def tick
+    mbp = mouse_box_pos
+    if mbp && !@sound_played
+      @audio[:button_hover] = { input: "sounds/button_hover.mp3" }
+      @sound_played = true
+    elsif !mbp
+      @sound_played = false
+    end
+
     if @mouse.key_down?(:left) && (i = mouse_box_pos)
       @choices.values[i].call
     end

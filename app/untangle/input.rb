@@ -7,6 +7,7 @@ class UntangleGame
     if @game_solved && @mouse.key_down?(:left) &&
        @mouse.intersect_rect?([0, 0, @screen_width, @screen_height])
       set_scene(:main_menu)
+      play_sound(:return_to_main_menu)
     end
 
     ### Main game inputs
@@ -42,6 +43,7 @@ class UntangleGame
   def handle_keyboard_inputs
     if @kb.key_down?(:escape)
       set_scene(:pause_menu)
+      play_sound(:pause)
     end
   end
 
