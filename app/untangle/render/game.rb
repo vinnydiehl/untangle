@@ -82,17 +82,21 @@ class UntangleGame
         filename = "node_solved"
       end
 
-      if @node_held
-        if @node_held == i
-          filename = "node_selected"
-        elsif connected.include?(i)
-          filename = "node_connected"
-        end
+      if @node_held && connected.include?(i)
+        filename = "node_connected"
       end
 
       @primitives << {
         **node_rect(node),
         path: "sprites/#{filename}.png",
+      }
+    end
+
+    # Render held node above the others
+    if @node_held
+      @primitives << {
+        **node_rect(@nodes[@node_held]),
+        path: "sprites/node_selected.png",
       }
     end
   end
