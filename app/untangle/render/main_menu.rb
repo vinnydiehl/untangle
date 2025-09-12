@@ -1,5 +1,5 @@
 class UntangleGame
-  def render_start
+  def render_main_menu
     render_background
     render_choices
   end

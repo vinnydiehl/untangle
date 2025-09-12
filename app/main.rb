@@ -1,4 +1,4 @@
-SCENES = %w[start game].freeze
+SCENES = %w[main_menu game].freeze
 
 require "lib/union_find/union_find.rb"
 

@@ -1,9 +1,9 @@
 class UntangleGame
-  def start_init
+  def main_menu_init
     @choices = DIFFICULTY.keys
   end
 
-  def start_tick
+  def main_menu_tick
     if @mouse.key_down?(:left) && (i = mouse_box_pos)
       @difficulty = DIFFICULTY.values[i]
       set_scene(:game)

@@ -22,13 +22,22 @@ class UntangleGame
     @sounds = args.outputs.sounds
     @primitives = args.outputs.primitives
 
-    set_scene(:start)
+    set_scene(:main_menu, reset_stack: true)
   end
 
-  def set_scene(scene)
+  def set_scene(scene, reset_stack: false)
+    @scene_stack = [] if reset_stack
     @scene = scene
-    send "#{scene}_init"
-    send "render_#{scene}_init" if respond_to?("render_#{scene}_init")
+    @scene_stack << scene
+
+    ["#{scene}_init", "render_#{scene}_init"].each do |method|
+      send method if respond_to?(method)
+    end
+  end
+
+  def set_scene_back
+    @scene_stack.pop
+    @scene = @scene_stack.last
   end
 
   def tick
