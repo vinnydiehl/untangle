@@ -31,7 +31,7 @@ class UntangleGame
           @game_solved = intersecting_edges.empty?
           play_sound(@game_solved ? :win : :place)
           # Stop timer when we win the game
-          @timer_end ||= @ticks if @game_solved
+          @timer_end ||= @timer if @game_solved
         end
 
         @node_held = nil
