@@ -3,7 +3,7 @@ SCENES = %w[main_menu game].freeze
 require "lib/union_find/union_find.rb"
 
 %w[colors constants generate input
-   movement untangle].each { |f| require "app/untangle/#{f}.rb" }
+   menu movement untangle].each { |f| require "app/untangle/#{f}.rb" }
 
 %w[scenes render].each { |dir| SCENES.each { |f| require "app/untangle/#{dir}/#{f}.rb" } }
 
