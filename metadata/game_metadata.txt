@@ -2,5 +2,5 @@ devid=vinnydiehl
 devtitle=Vinny Diehl
 gameid=Untangle
 gametitle=Untangle
-version=1.3
+version=1.4
 icon=metadata/icon.png
