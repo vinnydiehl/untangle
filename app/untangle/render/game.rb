@@ -28,9 +28,16 @@ class UntangleGame
     render_edges
     render_nodes
 
+    if @node_held
+      render_connected_nodes
+      render_held_edges
+      render_held_node
+    end
+
     if @game_solved
       render_solved_message
       # Render timer again so it's on top of the nodes/edges
+      # when in the solved state
       render_timer
     end
   end
@@ -89,24 +96,21 @@ class UntangleGame
   end
 
   def render_edges
-    @edges.each { |e| render_edge(e, :line) }
-
-    # Render edges connected to the @node_held in a lighter color
-    if @node_held
-      edges_connected_to(@node_held).each { |e| render_edge(e, :line_held) }
-    end
+    @edges.each { |e| render_edge(e) }
 
     # Hold `i` to highlight intersecting edges red
     if @highlight_intersecting_edges
-      intersecting_edges.each { |e| render_edge(e, :line_red) }
+      intersecting_edges.each { |e| render_edge(e, path: :line_red) }
     end
   end
 
-  def render_edge((i, j), path)
-    p1 = @nodes[i]
-    p2 = @nodes[j]
+  # Render edges connected to the @node_held in a lighter color
+  def render_held_edges
+    edges_connected_to(@node_held).each { |e| render_edge(e, path: :line_held) }
+  end
 
-    @primitives << thick_line(p1[0], p1[1], p2[0], p2[1], path: path)
+  def render_edge((i, j), path: :line)
+    @primitives << thick_line(*edge_line(i, j), path: path)
   end
 
   def edges_connected_to(i)
@@ -114,31 +118,31 @@ class UntangleGame
   end
 
   def render_nodes
-    connected = @node_held ? connected_nodes(@node_held) : []
     @nodes.each_with_index do |node, i|
       filename = "node"
-
-      if @game_solved
-        filename = "node_solved"
-      end
-
-      if @node_held && connected.include?(i)
-        filename = "node_connected"
-      end
+      filename += "_solved" if @game_solved
 
       @primitives << {
         **node_rect(node),
         path: "sprites/#{filename}.png",
       }
     end
+  end
 
-    # Render held node above the others
-    if @node_held
+  def render_connected_nodes
+    connected_nodes(@node_held).each do |i|
       @primitives << {
-        **node_rect(@nodes[@node_held]),
-        path: "sprites/node_selected.png",
+        **node_rect(@nodes[i]),
+        path: "sprites/node_connected.png",
       }
     end
+  end
+
+  def render_held_node
+    @primitives << {
+      **node_rect(@nodes[@node_held]),
+      path: "sprites/node_selected.png",
+    }
   end
 
   def node_rect(node)
@@ -172,5 +176,37 @@ class UntangleGame
       angle_anchor_x: 0, angle_anchor_y: 0,
       path: path,
     }
+  end
+
+  # Takes node indices `i` and `j` and returns an array containing
+  # the `[x1, y1, x2, y2]` of the line that needs to be drawn for
+  # that edge.
+  #
+  # Because some edges are drawn on top of the nodes (i.e. edges
+  # connected to @node_held), we need to clip the ends of the line
+  # so that they meet the node at the edge, rather than stabbing
+  # through the center.
+  def edge_line(i, j)
+    x1, y1 = @nodes[i]
+    x2, y2 = @nodes[j]
+
+    dx = x2 - x1
+    dy = y2 - y1
+    length = Math.sqrt((dx * dx) + (dy * dy))
+
+    # Length might be zero if the held node is right over one of
+    # the connected nodes. Dividing by zero doesn't crash DragonRuby,
+    # it just returns Infinity, but that's still not what we want
+    return [x1, y1, x2, y2] if length.zero?
+
+    # Normalize direction
+    ux = dx / length
+    uy = dy / length
+
+    # Move endpoints inward by radius
+    [
+      x1 + ux * NODE_RADIUS, y1 + uy * NODE_RADIUS,
+      x2 - ux * NODE_RADIUS, y2 - uy * NODE_RADIUS
+    ]
   end
 end
