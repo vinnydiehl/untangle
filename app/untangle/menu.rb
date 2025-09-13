@@ -36,7 +36,7 @@ class Menu
   def render_choices
     @choices.each_with_index do |(name, _), i|
       render_choice_box(i)
-      render_choice_text(name, i)
+      render_choice_text(name.to_capitalized_str, i)
     end
   end
 
@@ -87,7 +87,7 @@ class Menu
     @primitives << {
       x: x, y: y,
       w: CHOICE_BOX_WIDTH, h: CHOICE_BOX_HEIGHT,
-      text: str.capitalize,
+      text: str,
       alignment_enum: 1,
       vertical_alignment_enum: 1,
       size_enum: CHOICE_TEXT_SIZE,

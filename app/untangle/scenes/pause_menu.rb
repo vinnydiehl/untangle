@@ -1,7 +1,7 @@
 class UntangleGame
   def pause_menu_init
     choices = {
-      :"Main Menu" => -> do
+      main_menu: -> do
         set_scene(:main_menu, reset_stack: true)
         play_sound(:return_to_main_menu)
       end,
