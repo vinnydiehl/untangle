@@ -1,21 +1,45 @@
 class UntangleGame
   def generate_game
-    generate_nodes
-    generate_edges
+    if @difficulty == :double_trouble
+      # If we're in Double Trouble mode, we want to generate 2 graphs,
+      # one on the left side and one on the right.
+      #
+      # Originally I just generated a full-screen graph, cut it away, then
+      # generated another one and combined them, but doing it this way makes
+      # the startup animation look way cooler.
+
+      size = { w: @cx, h: @screen_height }
+
+      generate_nodes(ox: 0, oy: 0, **size)
+      generate_edges
+
+      nodes_tmp, edges_tmp = @nodes.deep_copy, @edges.deep_copy
+      @nodes, @edges = [], []
+      generate_nodes(ox: @cx, oy: 0, **size)
+      generate_edges
+
+      @nodes += nodes_tmp
+      nc = node_count
+      @edges += edges_tmp.map { |e| e.map { |n| n + nc } }
+    else
+      generate_nodes
+      generate_edges
+    end
+
     shuffle_nodes
   end
 
   # Randomly place the nodes all over the screen.
-  def generate_nodes
+  def generate_nodes(ox: 0, oy: 0, w: @screen_width, h: @screen_height)
     @nodes = []
     until @nodes.size >= node_count
       @nodes << loop do
-        x = rand(@screen_width)
-        y = rand(@screen_height)
+        x = rand(w)
+        y = rand(h)
         # Keep iterating until we find a spot a reasonable distance away from
         # other nodes. This prevents the solution from being too pixel-perfect
         if @nodes.all? { |nx, ny| Math.hypot(nx - x, ny - y) >= NODE_DIAMETER }
-          break [x, y]
+          break [x + ox, y + oy]
         end
       end
     end
@@ -232,7 +256,7 @@ class UntangleGame
   def shuffle_nodes
     # Make a circle of points centered in the screen
     circle = (0...@nodes.size).map do |i|
-      angle = (2 * Math::PI * i / node_count)
+      angle = (2 * Math::PI * i / @nodes.size)
       r = NODE_CIRCLE_RADIUS
       [@cx + Math.cos(angle) * r, @cy + Math.sin(angle) * r]
     end
@@ -243,16 +267,16 @@ class UntangleGame
     #
     # We're going to be animating the shuffle, so we need to do this on a
     # copy of @nodes so that the outer `until` loop can terminate.
-    nodes_copy = @nodes.map(&:dup)
-    until intersecting_edges(nodes_copy).size > 1
-      remaining_nodes = (0...@nodes.size).to_a
-      remaining_circle_points = circle.dup
-
-      until remaining_nodes.none?
-        i = remaining_nodes.delete(remaining_nodes.sample)
-        x, y = remaining_circle_points.delete(remaining_circle_points.sample)
+    nodes_copy = @nodes.deep_copy
+    # Ensure there are 0 intersections at the start, even if there actually
+    # are (i.e. Double Trouble mode)
+    intersects = 0
+    until intersects > 1
+      (0...@nodes.size).zip(circle.shuffle).each do |i, (x, y)|
         move_node(i, x, y, nodes: nodes_copy)
       end
+
+      intersects = intersecting_edges(nodes_copy).size
     end
 
     # We've found the positions, add the animations to the actual @nodes

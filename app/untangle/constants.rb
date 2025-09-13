@@ -22,6 +22,12 @@ DIFFICULTY = {
     node_count: 25,
     max_degree: 6,
   },
+  # Double Trouble generates 2 separate groups, each
+  # with the following properties:
+  double_trouble: {
+    node_count: 12,
+    max_degree: 4,
+  },
 }
 
 NODE_RADIUS = 16
