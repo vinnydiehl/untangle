@@ -7,9 +7,9 @@ class UntangleGame
     @new_best_time = false
     @time_to_beat = @best_times[@difficulty]
 
-    # Index and original position of node held by the mouse
-    @node_held = nil
-    @node_orig_pos = nil
+    # Index and original position of selected nodes
+    @selection = []
+    @selection_orig_pos = {}
 
     @highlight_intersecting_edges = false
 

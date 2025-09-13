@@ -12,20 +12,25 @@ class UntangleGame
 
     ### Main game inputs
 
-    if @mouse.key_down?(:left) && (@node_held = node_under_mouse)
-      @node_orig_pos = @nodes[@node_held]
-      play_sound(:pickup)
+    if @mouse.key_down?(:left)
+      if (node_clicked = node_under_mouse)
+        @selection << node_clicked
+        @selection_orig_pos[node_clicked] = @nodes[node_clicked]
+        play_sound(:pickup)
+      end
     end
 
-    if @node_held
+    if @selection
       if @mouse.key_held?(:left)
-        move_node(@node_held, @mouse.x, @mouse.y)
+        @selection.each { |n| move_node(n, @mouse.x, @mouse.y) }
       end
 
       if @mouse.key_up?(:left)
         # Check if we dragged the node off the screen
         if !@mouse.intersect_rect?([0, 0, @screen_width, @screen_height])
-          animate_move_node(@node_held, @node_orig_pos, RETURN_ANIMATION_DURATION)
+          @selection.each do |n|
+            animate_move_node(n, @selection_orig_pos[n], RETURN_ANIMATION_DURATION)
+          end
           play_sound(:rebound)
         else
           @game_solved = intersecting_edges.empty?
@@ -51,8 +56,8 @@ class UntangleGame
           play_sound(@game_solved ? :win : :place)
         end
 
-        @node_held = nil
-        @node_orig_pos = nil
+        @selection = []
+        @selection_orig_pos = {}
       end
     end
   end

@@ -13,9 +13,9 @@ class UntangleGame
       x: 0, y: 0, w: 1, h: 1,
       r: 255, g: 0, b: 0,
     }
-    @outputs[:line_held].w = 1
-    @outputs[:line_held].h = 1
-    @outputs[:line_held].primitives << {
+    @outputs[:line_selected].w = 1
+    @outputs[:line_selected].h = 1
+    @outputs[:line_selected].primitives << {
       primitive_marker: :solid,
       x: 0, y: 0, w: 1, h: 1,
       r: 30, g: 30, b: 30,
@@ -28,10 +28,10 @@ class UntangleGame
     render_edges
     render_nodes
 
-    if @node_held
+    if @selection.any?
       render_connected_nodes
-      render_held_edges
-      render_held_node
+      render_selected_edges
+      render_selected_nodes
     end
 
     if @game_solved
@@ -104,9 +104,11 @@ class UntangleGame
     end
   end
 
-  # Render edges connected to the @node_held in a lighter color
-  def render_held_edges
-    edges_connected_to(@node_held).each { |e| render_edge(e, path: :line_held) }
+  # Render edges connected to the selected nodes in a lighter color
+  def render_selected_edges
+    @selection.each do |i|
+      edges_connected_to(i).each { |e| render_edge(e, path: :line_selected) }
+    end
   end
 
   def render_edge((i, j), path: :line)
@@ -130,19 +132,23 @@ class UntangleGame
   end
 
   def render_connected_nodes
-    connected_nodes(@node_held).each do |i|
-      @primitives << {
-        **node_rect(@nodes[i]),
-        path: "sprites/node_connected.png",
-      }
+    @selection.each do |i|
+      connected_nodes(i).each do |ci|
+        @primitives << {
+          **node_rect(@nodes[ci]),
+          path: "sprites/node_connected.png",
+        }
+      end
     end
   end
 
-  def render_held_node
-    @primitives << {
-      **node_rect(@nodes[@node_held]),
-      path: "sprites/node_selected.png",
-    }
+  def render_selected_nodes
+    @selection.each do |i|
+      @primitives << {
+        **node_rect(@nodes[i]),
+        path: "sprites/node_selected.png",
+      }
+    end
   end
 
   def node_rect(node)
@@ -183,7 +189,7 @@ class UntangleGame
   # that edge.
   #
   # Because some edges are drawn on top of the nodes (i.e. edges
-  # connected to @node_held), we need to clip the ends of the line
+  # connected to a selection), we need to clip the ends of the line
   # so that they meet the node at the edge, rather than stabbing
   # through the center.
   def edge_line(i, j)
@@ -194,7 +200,7 @@ class UntangleGame
     dy = y2 - y1
     length = Math.sqrt((dx * dx) + (dy * dy))
 
-    # Length might be zero if the held node is right over one of
+    # Length might be zero if a selected node is right over one of
     # the connected nodes. Dividing by zero doesn't crash DragonRuby,
     # it just returns Infinity, but that's still not what we want
     return [x1, y1, x2, y2] if length.zero?
