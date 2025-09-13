@@ -12,6 +12,7 @@ class UntangleGame
     @screen_height = args.grid.h
     @cy = args.grid.h / 2
 
+    # Inputs
     @inputs = args.inputs
     @mouse = args.inputs.mouse
     @kb = args.inputs.keyboard
@@ -21,6 +22,18 @@ class UntangleGame
     @debug = args.outputs.debug
     @sounds = args.outputs.sounds
     @primitives = args.outputs.primitives
+
+    # Read best times file (or create one if it doesn't exist)
+    if (best_times_str = args.gtk.read_file(BEST_TIMES_FILE))
+      # Process this so that if difficulty levels have changed,
+      # i.e. across an update, the file is updated to reflect the changes
+      best_times_input = best_times_str.to_best_times_hash
+      @best_times = DIFFICULTY.keys.map { |d| [d, best_times_input[d]] }.to_h
+    else
+      # Write a blank best times file if one doesn't exist
+      @best_times = DIFFICULTY.keys.map { |d| [d, nil] }.to_h
+      save_best_times
+    end
 
     set_scene(:main_menu, reset_stack: true)
   end
@@ -57,5 +70,9 @@ class UntangleGame
 
   def play_sound(name)
     @args.audio[name] = { input: "sounds/#{name}.mp3" }
+  end
+
+  def save_best_times
+    @args.gtk.write_file(BEST_TIMES_FILE, @best_times.to_best_times_str)
   end
 end

@@ -1,10 +1,10 @@
 class UntangleGame
   def main_menu_init
-    choices = DIFFICULTY.keys.map.with_index do |diff, i|
+    choices = DIFFICULTY.keys.map.with_index do |difficulty, i|
       [
-        diff,
+        difficulty,
         -> do
-          @difficulty = DIFFICULTY[diff]
+          @difficulty = difficulty
           set_scene(:game)
         end,
       ]

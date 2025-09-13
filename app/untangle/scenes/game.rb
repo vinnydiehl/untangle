@@ -4,6 +4,8 @@ class UntangleGame
 
     @timer = 0
     @timer_end = nil
+    @new_best_time = false
+    @time_to_beat = @best_times[@difficulty]
 
     # Index and original position of node held by the mouse
     @node_held = nil
@@ -25,10 +27,15 @@ class UntangleGame
   end
 
   def node_count
-    @difficulty[:node_count]
+    DIFFICULTY[@difficulty][:node_count]
   end
 
   def max_degree
-    @difficulty[:max_degree]
+    DIFFICULTY[@difficulty][:max_degree]
+  end
+
+  # The timer is offset by the start animation
+  def actual_time(ticks)
+    ticks - START_ANIMATION_DURATION
   end
 end

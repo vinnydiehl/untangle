@@ -29,9 +29,26 @@ class UntangleGame
           play_sound(:rebound)
         else
           @game_solved = intersecting_edges.empty?
+
+          # Win condition
+          if @game_solved
+            @timer_end ||= actual_time(@timer)
+
+            if (best_time = @best_times[@difficulty])
+              if @timer_end < best_time
+                @new_best_time = true
+                @best_times[@difficulty] = @timer_end
+                save_best_times
+              end
+            else
+              # No current best time, save it, but we don't want to
+              # display the "new best time" message
+              @best_times[@difficulty] = @timer_end
+              save_best_times
+            end
+          end
+
           play_sound(@game_solved ? :win : :place)
-          # Stop timer when we win the game
-          @timer_end ||= @timer if @game_solved
         end
 
         @node_held = nil

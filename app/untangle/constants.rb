@@ -1,3 +1,5 @@
+BEST_TIMES_FILE = "best_times"
+
 # Difficulty levels, based on the following factors:
 #
 #  - :node_count is the number of nodes in the graph
@@ -35,5 +37,7 @@ START_ANIMATION_DURATION = 0.3.seconds
 RETURN_ANIMATION_DURATION = 0.1.seconds
 
 TIMER_SIZE = 15
+TIME_TO_BEAT_SIZE = 2
+NEW_BEST_TIME_MESSAGE_SIZE = 8
 SOLVED_MESSAGE_SIZE = 1
 TEXT_PADDING = 10

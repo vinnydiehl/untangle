@@ -1,6 +1,7 @@
 SCENES = %w[main_menu game pause_menu].freeze
 
 require "lib/union_find/union_find.rb"
+%w[hash string].each { |f| require "lib/core_ext/#{f}.rb" }
 
 %w[colors constants generate input
    menu movement untangle].each { |f| require "app/untangle/#{f}.rb" }

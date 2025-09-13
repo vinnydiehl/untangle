@@ -36,18 +36,38 @@ class UntangleGame
   end
 
   def render_timer
-    time = @timer_end ? @timer_end : @timer
+    time = @timer_end ? @timer_end : actual_time(@timer)
 
     @primitives << {
       x: 0 + TEXT_PADDING,
       y: @screen_height - TEXT_PADDING,
-      text: format_time(
-        # Don't start timer until start animation is over
-        [0, (time - START_ANIMATION_DURATION)].max
-      ),
+      text: format_time([0, time].max),
       size_enum: TIMER_SIZE,
       r: 255, g: 255, b: 255,
     }
+
+    # Time to beat
+    if @time_to_beat
+      @primitives << {
+        x: 0 + TEXT_PADDING,
+        y: @screen_height - TEXT_PADDING - 50,
+        text: "(#{format_time(@time_to_beat)})",
+        size_enum: TIME_TO_BEAT_SIZE,
+        r: 255, g: 255, b: 255,
+      }
+    end
+
+    # "New best time" message
+    if @new_best_time
+      @primitives << {
+        x: @screen_width - TEXT_PADDING,
+        y: @screen_height - TEXT_PADDING,
+        text: "New best time for #{@difficulty} mode!",
+        size_enum: NEW_BEST_TIME_MESSAGE_SIZE,
+        alignment_enum: 2,
+        r: 255, g: 255, b: 255,
+      }
+    end
   end
 
   def render_solved_message
