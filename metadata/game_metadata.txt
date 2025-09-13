@@ -4,3 +4,5 @@ gameid=Untangle
 gametitle=Untangle
 version=1.7
 icon=metadata/icon.png
+
+ignore_directories=save_data

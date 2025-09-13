@@ -1,4 +1,4 @@
-BEST_TIMES_FILE = "best_times"
+BEST_TIMES_FILE = "save_data/best_times"
 
 # Difficulty levels, based on the following factors:
 #
