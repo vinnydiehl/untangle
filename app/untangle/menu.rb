@@ -2,6 +2,8 @@ CHOICE_BOX_WIDTH = 400
 CHOICE_BOX_HEIGHT = 100
 CHOICES_PADDING = 50
 CHOICE_TEXT_SIZE = 6
+CHOICE_SUBTEXT_SIZE = 0
+SUBTEXT_PADDING = 5
 
 class Menu
   def initialize(args, choices)
@@ -33,10 +35,11 @@ class Menu
     end
   end
 
-  def render_choices
+  def render_choices(subtext: nil)
     @choices.each_with_index do |(name, _), i|
       render_choice_box(i)
       render_choice_text(name.to_capitalized_str, i)
+      render_choice_subtext(subtext[i], i) if subtext
     end
   end
 
@@ -86,11 +89,24 @@ class Menu
 
     @primitives << {
       x: x, y: y,
-      w: CHOICE_BOX_WIDTH, h: CHOICE_BOX_HEIGHT,
       text: str,
       alignment_enum: 1,
       vertical_alignment_enum: 1,
       size_enum: CHOICE_TEXT_SIZE,
+      r: 255, g: 255, b: 255,
+    }
+  end
+
+  def render_choice_subtext(str, i)
+    x, y = choice_point(i)
+
+    @primitives << {
+      x: x + (CHOICE_BOX_WIDTH / 2) - (SUBTEXT_PADDING * 1.5),
+      y: y - (CHOICE_BOX_HEIGHT / 2) + SUBTEXT_PADDING,
+      text: str,
+      alignment_enum: 2,
+      vertical_alignment_enum: 0,
+      size_enum: CHOICE_SUBTEXT_SIZE,
       r: 255, g: 255, b: 255,
     }
   end
