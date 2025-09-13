@@ -34,6 +34,10 @@ class UntangleGame
       render_selected_nodes
     end
 
+    if @selection_box_origin
+      render_selection_box
+    end
+
     if @game_solved
       render_solved_message
       # Render timer again so it's on top of the nodes/edges
@@ -214,5 +218,13 @@ class UntangleGame
       x1 + ux * NODE_RADIUS, y1 + uy * NODE_RADIUS,
       x2 - ux * NODE_RADIUS, y2 - uy * NODE_RADIUS
     ]
+  end
+
+  def render_selection_box
+    @primitives << {
+      primitive_marker: :border,
+      **selection_rect,
+      **SELECTION_BOX_COLOR,
+    }
   end
 end

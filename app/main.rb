@@ -4,7 +4,7 @@ require "lib/union_find/union_find.rb"
 %w[array hash string symbol].each { |f| require "lib/core_ext/#{f}.rb" }
 
 %w[colors constants generate input
-   menu movement untangle].each { |f| require "app/untangle/#{f}.rb" }
+   menu movement selection untangle].each { |f| require "app/untangle/#{f}.rb" }
 
 %w[scenes render].each { |dir| SCENES.each { |f| require "app/untangle/#{dir}/#{f}.rb" } }
 

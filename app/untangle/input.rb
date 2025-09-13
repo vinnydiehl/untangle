@@ -12,27 +12,66 @@ class UntangleGame
 
     ### Main game inputs
 
-    if @mouse.key_down?(:left)
+    if @mouse.key_down?(:left) && !@selection_box_origin
+      @mouse_orig_pos = mouse_pos
+
       if (node_clicked = node_under_mouse)
-        @selection << node_clicked
-        @selection_orig_pos[node_clicked] = @nodes[node_clicked]
+        if @kb.key_down_or_held?(:shift)
+          if @selection.include?(node_clicked)
+            remove_selection(node_clicked)
+          else
+            add_selection(node_clicked)
+          end
+
+          play_sound(:select)
+          return
+        elsif (@selection.empty? || !@selection.include?(node_clicked)) &&
+           !@kb.key_down_or_held?(:shift)
+          # We've clicked on a node directly
+          select_nodes([node_clicked])
+        end
+
+        return unless @selection.include?(node_clicked)
+
+        @dragging_selection = true
         play_sound(:pickup)
+      else
+        # We've clicked on an empty spot on the screen, so
+        # make a selection
+        @selection_box_origin = [@mouse.x, @mouse.y]
+        play_sound(:select)
       end
     end
 
-    if @selection
+    if @selection.any? && !@selection_box_origin
       if @mouse.key_held?(:left)
-        @selection.each { |n| move_node(n, @mouse.x, @mouse.y) }
+        return unless @dragging_selection
+
+        @selection.each_with_index do |n, i|
+          move_node(n, @selection_orig_pos[n].x + @mouse.x - @mouse_orig_pos.x,
+                       @selection_orig_pos[n].y + @mouse.y - @mouse_orig_pos.y)
+        end
       end
 
       if @mouse.key_up?(:left)
-        # Check if we dragged the node off the screen
-        if !@mouse.intersect_rect?([0, 0, @screen_width, @screen_height])
+        all_nodes_on_screen = @selection.all? do |i|
+          @nodes[i].intersect_rect?([0, 0, @screen_width, @screen_height])
+        end
+
+        if !all_nodes_on_screen
+          # We've dragged node off the screen
           @selection.each do |n|
             animate_move_node(n, @selection_orig_pos[n], RETURN_ANIMATION_DURATION)
           end
           play_sound(:rebound)
         else
+          # We've let go of a node (or selection of nodes)
+
+          # Set new origin position
+          @selection.each do |i|
+            @selection_orig_pos[i] = @nodes[i]
+          end
+
           @game_solved = intersecting_edges.empty?
 
           # Win condition
@@ -53,11 +92,25 @@ class UntangleGame
             end
           end
 
-          play_sound(@game_solved ? :win : :place)
+          play_sound(@game_solved ? :win : :place) if @dragging_selection
         end
 
-        @selection = []
-        @selection_orig_pos = {}
+        @dragging_selection = false
+
+        if @selection.size < 2 && !@kb.key_held?(:shift)
+          clear_selection
+        end
+      end
+    else
+      if @mouse.key_up?(:left)
+        play_sound(:select) if @selection_box_origin
+        @selection_box_origin = nil
+      elsif @selection_box_origin && @mouse.key_held?(:left)
+        select_nodes(
+          @nodes.filter_map.with_index do |node, i|
+            i if node.intersect_rect?(selection_rect)
+          end
+        )
       end
     end
   end
@@ -77,5 +130,9 @@ class UntangleGame
   # isn't over a node.
   def node_under_mouse
     @nodes.find_index { |node| @mouse.intersect_rect?(node_rect(node)) }
+  end
+
+  def mouse_pos
+    [@mouse.x, @mouse.y]
   end
 end

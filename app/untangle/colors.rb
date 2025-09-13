@@ -2,6 +2,10 @@ BACKGROUND_COLOR = {
   r: 63, g: 63, b: 63,
 }
 
+SELECTION_BOX_COLOR = {
+  r: 100, g: 100, b: 100,
+}
+
 BUTTON_COLOR = {
   r: 45, g: 45, b: 45,
 }

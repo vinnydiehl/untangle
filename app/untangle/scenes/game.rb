@@ -10,6 +10,9 @@ class UntangleGame
     # Index and original position of selected nodes
     @selection = []
     @selection_orig_pos = {}
+    @selection_box_origin = nil
+    @mouse_orig_pos = nil
+    @dragging_selection = false
 
     @highlight_intersecting_edges = false
 
