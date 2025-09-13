@@ -11,6 +11,8 @@ class UntangleGame
     @node_held = nil
     @node_orig_pos = nil
 
+    @highlight_intersecting_edges = false
+
     @animated_nodes = []
 
     generate_game

@@ -97,7 +97,7 @@ class UntangleGame
     end
 
     # Hold `i` to highlight intersecting edges red
-    if @kb.key_held?(:i)
+    if @highlight_intersecting_edges
       intersecting_edges.each { |e| render_edge(e, :line_red) }
     end
   end

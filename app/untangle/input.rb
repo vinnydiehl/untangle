@@ -62,6 +62,10 @@ class UntangleGame
       set_scene(:pause_menu)
       play_sound(:pause)
     end
+
+    if @kb.key_down?(:i)
+      @highlight_intersecting_edges = !@highlight_intersecting_edges
+    end
   end
 
   # Returns the index of the node under the mouse, or nil if the mouse
