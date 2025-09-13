@@ -73,7 +73,7 @@ class UntangleGame
       @primitives << {
         x: @screen_width - TEXT_PADDING,
         y: @screen_height - TEXT_PADDING,
-        text: "New best time for #{@difficulty} mode!",
+        text: "New best time for #{@difficulty.to_capitalized_str} mode!",
         size_enum: NEW_BEST_TIME_MESSAGE_SIZE,
         alignment_enum: 2,
         r: 255, g: 255, b: 255,
