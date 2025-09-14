@@ -24,8 +24,7 @@ class UntangleGame
 
   def custom_menu_tick
     if @kb.key_down?(:escape)
-      set_scene_back
-      play_sound(:menu_switch)
+      exit_menu
     end
 
     if @mouse.key_down?(:left)
@@ -45,6 +44,11 @@ class UntangleGame
       return
     end
 
+    if mouse_on_back_button?
+      exit_menu
+      return
+    end
+
     @selectors.each do |_, data|
       data[:buttons].each do |button|
         if @mouse.intersect_rect?(button)
@@ -56,6 +60,15 @@ class UntangleGame
         end
       end
     end
+  end
+
+  def exit_menu
+    set_scene_back
+    play_sound(:menu_switch)
+  end
+
+  def mouse_on_back_button?
+    mouse_pos.intersect_rect?(@back_button_rect)
   end
 
   def mouse_on_start_button?

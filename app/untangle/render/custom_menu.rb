@@ -6,6 +6,11 @@ SELECTOR_HEIGHT = 40
 SELECTOR_X_SPACING = 250
 SELECTOR_Y_SPACING = 100
 
+BACK_BUTTON_WIDTH = 100
+BACK_BUTTON_HEIGHT = 50
+BACK_BUTTON_PADDING = 20
+BACK_TEXT_SIZE = 0
+
 START_BUTTON_WIDTH = 200
 START_BUTTON_HEIGHT = 75
 
@@ -16,6 +21,12 @@ class UntangleGame
     @start_button_rect = {
       x: @cx - (START_BUTTON_WIDTH / 2), y: 100,
       w: START_BUTTON_WIDTH, h: START_BUTTON_HEIGHT,
+    }
+
+    @back_button_rect = {
+      x: BACK_BUTTON_PADDING,
+      y: @screen_height - BACK_BUTTON_HEIGHT - BACK_BUTTON_PADDING,
+      w: BACK_BUTTON_WIDTH, h: BACK_BUTTON_HEIGHT,
     }
   end
 
@@ -53,6 +64,7 @@ class UntangleGame
   def render_custom_menu
     render_background
     render_selectors
+    render_back_button
     render_start_button
   end
 
@@ -92,6 +104,29 @@ class UntangleGame
         r: 255, g: 255, b: 255,
       }
     end
+  end
+
+  def render_back_button
+    @primitives << {
+      primitive_marker: :solid,
+      **@back_button_rect,
+      **(mouse_on_back_button? ? BUTTON_HIGHLIGHT_COLOR : BUTTON_COLOR),
+    }
+    @primitives << {
+      primitive_marker: :border,
+      **@back_button_rect,
+      **BUTTON_BORDER_COLOR,
+    }
+
+    @primitives << {
+      x: @back_button_rect.x + (BACK_BUTTON_WIDTH / 2),
+      y: @back_button_rect.y + (BACK_BUTTON_HEIGHT / 2),
+      text: "Back",
+      alignment_enum: 1,
+      vertical_alignment_enum: 1,
+      size_enum: BACK_TEXT_SIZE,
+      r: 255, g: 255, b: 255,
+    }
   end
 
   def render_start_button
