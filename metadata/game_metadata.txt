@@ -2,7 +2,7 @@ devid=vinnydiehl
 devtitle=Vinny Diehl
 gameid=Untangle
 gametitle=Untangle
-version=1.11.1
+version=1.12
 icon=metadata/icon.png
 
 ignore_directories=save_data
