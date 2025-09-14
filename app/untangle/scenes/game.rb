@@ -39,6 +39,10 @@ class UntangleGame
     DIFFICULTY[@difficulty][:max_degree]
   end
 
+  def groups
+    DIFFICULTY[@difficulty][:groups]
+  end
+
   # The timer is offset by the start animation
   def actual_time(ticks)
     ticks - START_ANIMATION_DURATION

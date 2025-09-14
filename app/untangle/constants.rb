@@ -5,28 +5,32 @@ BEST_TIMES_FILE = "save_data/best_times"
 #  - :node_count is the number of nodes in the graph
 #  - :max_degree is the maximum number of edges that can be connected
 #                to a given node during generation
+#  - :groups is the number of separate graphs which are generated
 DIFFICULTY = {
   easy: {
     node_count: 10,
     max_degree: 4,
+    groups: 1,
   },
   intermediate: {
     node_count: 20,
     max_degree: 4,
+    groups: 1,
   },
   hard: {
     node_count: 20,
     max_degree: 5,
+    groups: 1,
   },
   expert: {
     node_count: 25,
     max_degree: 6,
+    groups: 1,
   },
-  # Double Trouble generates 2 separate groups, each
-  # with the following properties:
   double_trouble: {
     node_count: 12,
     max_degree: 4,
+    groups: 2,
   },
 }
 

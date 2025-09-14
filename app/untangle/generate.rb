@@ -1,66 +1,59 @@
 class UntangleGame
   def generate_game
-    if @difficulty == :double_trouble
-      # If we're in Double Trouble mode, we want to generate 2 graphs,
-      # one on the left side and one on the right.
-      #
-      # Originally I just generated a full-screen graph, cut it away, then
-      # generated another one and combined them, but doing it this way makes
-      # the startup animation look way cooler.
+    # Generate `groups` number of graphs, spaced evenly across the screen.
+    nodes_groups, edges_groups = [], []
+    groups.times do |i|
+      size = { w: @screen_width / groups, h: @screen_height }
 
-      size = { w: @cx, h: @screen_height }
+      nodes_groups << generate_nodes(ox: i * size[:w], oy: 0, **size)
+      edges_groups << generate_edges(nodes_groups.last)
+    end
 
-      generate_nodes(ox: 0, oy: 0, **size)
-      generate_edges
-
-      nodes_tmp, edges_tmp = @nodes.deep_copy, @edges.deep_copy
-      @nodes, @edges = [], []
-      generate_nodes(ox: @cx, oy: 0, **size)
-      generate_edges
-
-      @nodes += nodes_tmp
-      nc = node_count
-      @edges += edges_tmp.map { |e| e.map { |n| n + nc } }
-    else
-      generate_nodes
-      generate_edges
+    # Place them into the main graph
+    @nodes, @edges = [], []
+    nodes_groups.zip(edges_groups).each_with_index do |(nodes, edges), i|
+      @nodes += nodes
+      # Increment the indices to their new location in @nodes
+      @edges += edges.map { |e| e.map { |n| n + (node_count * i) } }
     end
 
     shuffle_nodes
   end
 
-  # Randomly place the nodes all over the screen.
+  # Randomly place the nodes all over a graph of a given position and size.
   def generate_nodes(ox: 0, oy: 0, w: @screen_width, h: @screen_height)
-    @nodes = []
-    until @nodes.size >= node_count
-      @nodes << loop do
-        x = rand(w)
-        y = rand(h)
+    nodes = []
+
+    until nodes.size >= node_count
+      nodes << loop do
+        x, y = rand(w), rand(h)
         # Keep iterating until we find a spot a reasonable distance away from
         # other nodes. This prevents the solution from being too pixel-perfect
-        if @nodes.all? { |nx, ny| Math.hypot(nx - x, ny - y) >= NODE_DIAMETER }
+        if nodes.all? { |nx, ny| Math.hypot(nx - x, ny - y) >= NODE_DIAMETER }
           break [x + ox, y + oy]
         end
       end
     end
+
+    nodes
   end
 
-  # Generate @edges. This is a list of index pairs of @nodes. For
-  # example, if @nodes[0] is connected to @nodes[1], @edges will
+  # Generate edges. This is a list of index pairs of nodes. For
+  # example, if nodes[0] is connected to nodes[1], edges will
   # contain [0, 1] or [1, 0].
-  def generate_edges
-    n = @nodes.size
+  def generate_edges(nodes)
+    n = nodes.size
     # Array of how many edges are connected to each node (by index)
     degrees = Array.new(n, 0)
-    @edges = []
+    edges = []
 
     # Compute convex hull and connect hull edges first to ensure a
     # fully connected border around all nodes.
-    hull = convex_hull_indices
+    hull = convex_hull_indices(nodes)
     hull.each_with_index do |i, idx|
       # Modulo so it wraps around at the end
       j = hull[(idx + 1) % hull.size]
-      add_edge(i, j, degrees)
+      add_edge(edges, i, j, degrees)
     end
 
     # Build minimum spanning tree for nodes inside the hull, connecting
@@ -74,9 +67,9 @@ class UntangleGame
       i, j = in_mst.each_index
                    .select { |i| in_mst[i] }
                    .product(remaining)
-                   .min_by { |i, j| dist2(@nodes[i], @nodes[j]) }
+                   .min_by { |i, j| dist2(nodes[i], nodes[j]) }
 
-      add_edge(i, j, degrees)
+      add_edge(edges, i, j, degrees)
       in_mst[j] = true
       remaining.delete(j)
     end
@@ -94,20 +87,20 @@ class UntangleGame
         # sort them by distance.
         # This excludes the current node, nodes at max degree, or existing edges
         candidates = (0...n).reject do |k|
-          k == j || degrees[k] >= max_degree || edge_exists?(j, k)
-        end.sort_by { |k| dist2(@nodes[j], @nodes[k]) }
+          k == j || degrees[k] >= max_degree || edge_exists?(edges, j, k)
+        end.sort_by { |k| dist2(nodes[j], nodes[k]) }
 
         candidates.each do |k|
           # Skip if adding this edge would intersect any existing edge
-          next if @edges.any? { |u, v| intersect?([j, k], [u, v]) }
+          next if edges.any? { |u, v| intersect?([j, k], [u, v], nodes: nodes) }
 
           # Skip if this edge would pass through another node
-          next if @nodes.each_with_index.any? do |pt, idx|
-            idx != j && idx != k && point_on_segment?(pt, @nodes[j], @nodes[k])
+          next if nodes.each_with_index.any? do |pt, idx|
+            idx != j && idx != k && point_on_segment?(pt, nodes[j], nodes[k])
           end
 
           # Add the edge and update the degree counters
-          add_edge(j, k, degrees)
+          add_edge(edges, j, k, degrees)
           added = true
           break
         end
@@ -119,23 +112,25 @@ class UntangleGame
       # Stop the loop when no more edges can be added
       break unless added
     end
+
+    edges
   end
 
-  # Adds an edge to @edges. Takes a reference to an Array `degrees` which
+  # Adds an edge to +edges+. Takes a reference to an Array `degrees` which
   # it updates the relevant indices of.
-  def add_edge(i, j, degrees)
-    @edges << [i, j]
+  def add_edge(edges, i, j, degrees)
+    edges << [i, j]
     degrees[i] += 1
     degrees[j] += 1
   end
 
   # Returns an ordered array of the node indices that need to be connected
   # to form a convex hull around all of the nodes.
-  def convex_hull_indices
+  def convex_hull_indices(nodes)
     # Prepare an array of nodes with their original indices, sorted
     # y-coordinate, breaking ties by x-coordinate
-    pts = @nodes.map.with_index { |p, i| [p[0], p[1], i] }
-                .sort_by { |x, y, _| [y, x] }
+    pts = nodes.map.with_index { |p, i| [p[0], p[1], i] }
+               .sort_by { |x, y, _| [y, x] }
 
     # Choose the pivot point, we'll make it the bottom-most
     # (and left-most if tied)
@@ -178,8 +173,8 @@ class UntangleGame
   end
 
   # Returns whether or not there is an edge connecting nodes `a` and `b`.
-  def edge_exists?(a, b)
-    @edges.include?([a, b]) || @edges.include?([b, a])
+  def edge_exists?(edges, a, b)
+    edges.include?([a, b]) || edges.include?([b, a])
   end
 
   # Takes 2 edges and returns whether or not they intersect.
