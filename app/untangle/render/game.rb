@@ -124,35 +124,27 @@ class UntangleGame
   end
 
   def render_nodes
-    @nodes.each_with_index do |node, i|
-      filename = "node"
-      filename += "_solved" if @game_solved
-
-      @primitives << {
-        **node_rect(node),
-        path: "sprites/#{filename}.png",
-      }
-    end
+    @nodes.each_index { |i| render_node(i, @game_solved ? :solved : nil) }
   end
 
   def render_connected_nodes
     @selection.each do |i|
-      connected_nodes(i).each do |ci|
-        @primitives << {
-          **node_rect(@nodes[ci]),
-          path: "sprites/node_connected.png",
-        }
-      end
+      connected_nodes(i).each { |ci| render_node(ci, :connected) }
     end
   end
 
   def render_selected_nodes
-    @selection.each do |i|
-      @primitives << {
-        **node_rect(@nodes[i]),
-        path: "sprites/node_selected.png",
-      }
-    end
+    @selection.each { |i| render_node(i, :selected) }
+  end
+
+  def render_node(i, modifier = nil)
+    filename = "node"
+    filename += "_#{modifier}" if modifier
+
+    @primitives << {
+      **node_rect(@nodes[i]),
+      path: "sprites/nodes/#{filename}.png",
+    }
   end
 
   def node_rect(node)
