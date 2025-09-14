@@ -6,9 +6,17 @@ SELECTOR_HEIGHT = 40
 SELECTOR_X_SPACING = 250
 SELECTOR_Y_SPACING = 100
 
+START_BUTTON_WIDTH = 200
+START_BUTTON_HEIGHT = 75
+
 class UntangleGame
   def render_custom_menu_init
     set_selector_positions
+
+    @start_button_rect = {
+      x: @cx - (START_BUTTON_WIDTH / 2), y: 100,
+      w: START_BUTTON_WIDTH, h: START_BUTTON_HEIGHT,
+    }
   end
 
   def set_selector_positions
@@ -45,6 +53,7 @@ class UntangleGame
   def render_custom_menu
     render_background
     render_selectors
+    render_start_button
   end
 
   def render_selectors
@@ -83,5 +92,28 @@ class UntangleGame
         r: 255, g: 255, b: 255,
       }
     end
+  end
+
+  def render_start_button
+    @primitives << {
+      primitive_marker: :solid,
+      **@start_button_rect,
+      **(mouse_on_start_button? ? BUTTON_HIGHLIGHT_COLOR : BUTTON_COLOR),
+    }
+    @primitives << {
+      primitive_marker: :border,
+      **@start_button_rect,
+      **BUTTON_BORDER_COLOR,
+    }
+
+    @primitives << {
+      x: @start_button_rect.x + (START_BUTTON_WIDTH / 2),
+      y: @start_button_rect.y + (START_BUTTON_HEIGHT / 2),
+      text: "Start",
+      alignment_enum: 1,
+      vertical_alignment_enum: 1,
+      size_enum: 8,
+      r: 255, g: 255, b: 255,
+    }
   end
 end

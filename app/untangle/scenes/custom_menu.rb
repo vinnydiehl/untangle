@@ -4,13 +4,13 @@ class UntangleGame
       nodes: {
         setting: :node_count,
         value: 10,
-        min: 3,
+        min: 4,
         max: 50,
       },
       connectivity: {
         setting: :max_degree,
         value: 3,
-        min: 2,
+        min: 3,
         max: 10,
       },
       groups: {
@@ -34,6 +34,17 @@ class UntangleGame
   end
 
   def handle_click
+    if mouse_on_start_button?
+      @difficulty = :custom
+      @difficulty_settings = @selectors.map do |_, data|
+        [data[:setting], data[:value]]
+      end.to_h
+
+      set_scene(:game)
+
+      return
+    end
+
     @selectors.each do |_, data|
       data[:buttons].each do |button|
         if @mouse.intersect_rect?(button)
@@ -44,5 +55,9 @@ class UntangleGame
         end
       end
     end
+  end
+
+  def mouse_on_start_button?
+    mouse_pos.intersect_rect?(@start_button_rect)
   end
 end

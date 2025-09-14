@@ -2,6 +2,8 @@ class UntangleGame
   def game_init
     @game_solved = false
 
+    @difficulty_settings = DIFFICULTY[@difficulty] unless @difficulty == :custom
+
     @timer = 0
     @timer_end = nil
     @new_best_time = false
@@ -32,15 +34,15 @@ class UntangleGame
   end
 
   def node_count
-    DIFFICULTY[@difficulty][:node_count]
+    @difficulty_settings[:node_count]
   end
 
   def max_degree
-    DIFFICULTY[@difficulty][:max_degree]
+    @difficulty_settings[:max_degree]
   end
 
   def groups
-    DIFFICULTY[@difficulty][:groups]
+    @difficulty_settings[:groups]
   end
 
   # The timer is offset by the start animation
