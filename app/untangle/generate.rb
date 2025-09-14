@@ -27,9 +27,16 @@ class UntangleGame
     until nodes.size >= node_count
       nodes << loop do
         x, y = rand(w), rand(h)
+
         # Keep iterating until we find a spot a reasonable distance away from
-        # other nodes. This prevents the solution from being too pixel-perfect
-        if nodes.all? { |nx, ny| Math.hypot(nx - x, ny - y) >= NODE_DIAMETER }
+        # other nodes. This prevents the solution from being too pixel-perfect.
+        #
+        # ...unless we're generating a custom difficulty with a large amount of
+        # nodes and groups. If someone is generating such a graph, they're a
+        # masochist anyway, and trying to space the nodes apart increases load
+        # times dramatically, possibly to the point of never being able to load.
+        if nodes.all? { |nx, ny| Math.hypot(nx - x, ny - y) >= NODE_DIAMETER } ||
+           (nodes.size > 20 && groups > 5)
           break [x + ox, y + oy]
         end
       end

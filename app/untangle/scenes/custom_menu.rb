@@ -17,7 +17,7 @@ class UntangleGame
         setting: :groups,
         value: 1,
         min: 1,
-        max: 5,
+        max: 10,
       },
     }
   end
@@ -51,6 +51,7 @@ class UntangleGame
           data[:value] = (data[:value] + button[:value]).clamp(
             data[:min], data[:max],
           )
+          play_sound(:button_hover)
           return
         end
       end
