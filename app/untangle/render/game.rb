@@ -28,21 +28,21 @@ class UntangleGame
     render_edges
     render_nodes
 
-    if @selection.any?
-      render_connected_nodes
-      render_selected_edges
-      render_selected_nodes
-    end
-
-    if @selection_box_origin
-      render_selection_box
-    end
-
     if @game_solved
       render_solved_message
       # Render timer again so it's on top of the nodes/edges
       # when in the solved state
       render_timer
+    else
+      if @selection.any?
+        render_connected_nodes
+        render_selected_edges
+        render_selected_nodes
+      end
+
+      if @selection_box_origin
+        render_selection_box
+      end
     end
   end
 
