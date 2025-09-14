@@ -30,6 +30,8 @@ class UntangleGame
     if @mouse.key_down?(:left)
       handle_click
     end
+
+    handle_scroll
   end
 
   def handle_click
@@ -52,14 +54,41 @@ class UntangleGame
     @selectors.each do |_, data|
       data[:buttons].each do |button|
         if @mouse.intersect_rect?(button)
-          data[:value] = (data[:value] + button[:value]).clamp(
-            data[:min], data[:max],
-          )
+          set_clamped_value(data, data[:value] + button[:value])
           play_sound(:button_hover)
           return
         end
       end
     end
+  end
+
+  def handle_scroll
+    return unless (d = @mouse.wheel&.y)
+
+    @selectors.each do |_, data|
+      number_rect = {
+        x: data[:buttons][0].x,
+        y: @start_y_bottom + SELECTOR_HEIGHT,
+        w: SELECTOR_WIDTH, h: SELECTOR_Y_SPACING,
+      }
+
+      next unless @mouse.intersect_rect?(number_rect)
+
+      orig_value = data[:value]
+      set_clamped_value(data, data[:value] += d)
+
+      # Light up the top or bottom button depending on which
+      # way we're scrolling (if the value has changed)
+      if data[:value] != orig_value
+        button_i = d > 0 ? 0 : 1
+        data[:buttons][button_i][:a] = ARROW_BRIGHT_ALPHA
+        play_sound(:scroll)
+      end
+    end
+  end
+
+  def set_clamped_value(data, value)
+    data[:value] = value.clamp(data[:min], data[:max])
   end
 
   def exit_menu

@@ -1,5 +1,5 @@
 ARROW_ALPHA = 100
-ARROW_BRIGHT_ALPHA = 200
+ARROW_BRIGHT_ALPHA = 255
 
 SELECTOR_WIDTH = 100
 SELECTOR_HEIGHT = 40
@@ -32,9 +32,9 @@ class UntangleGame
 
   def set_selector_positions
     start_x = @cx - (SELECTOR_X_SPACING * (@selectors.size - 1) / 2) - (SELECTOR_WIDTH / 2)
-    start_y_bottom = @cy - (SELECTOR_Y_SPACING / 2) - SELECTOR_HEIGHT
-    start_y_top = start_y_bottom + SELECTOR_HEIGHT + SELECTOR_Y_SPACING
-    @label_y = start_y_bottom + (SELECTOR_HEIGHT * 2) + SELECTOR_Y_SPACING + 50
+    @start_y_bottom = @cy - (SELECTOR_Y_SPACING / 2) - SELECTOR_HEIGHT
+    start_y_top = @start_y_bottom + SELECTOR_HEIGHT + SELECTOR_Y_SPACING
+    @label_y = @start_y_bottom + (SELECTOR_HEIGHT * 2) + SELECTOR_Y_SPACING + 50
 
     @selectors.each_with_index do |(_, data), i|
       data[:buttons] = [
@@ -49,7 +49,7 @@ class UntangleGame
         },
         {
           x: start_x + i * SELECTOR_X_SPACING,
-          y: start_y_bottom,
+          y: @start_y_bottom,
           w: 100,
           h: 40,
           angle: 180,
