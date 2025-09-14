@@ -26,6 +26,10 @@ class UntangleGame
     load_best_times
     load_custom_times
 
+    # On first launch, the custom menu will default to the easy
+    # settings. If they're changed, however, they will persist.
+    @custom_menu_defaults = DIFFICULTY[:easy]
+
     set_scene(:main_menu, reset_stack: true)
   end
 

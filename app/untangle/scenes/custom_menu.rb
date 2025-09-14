@@ -3,19 +3,19 @@ class UntangleGame
     @selectors = {
       nodes: {
         setting: :node_count,
-        value: 10,
+        value: @custom_menu_defaults[:node_count],
         min: 4,
         max: 50,
       },
       connectivity: {
         setting: :max_degree,
-        value: 4,
+        value: @custom_menu_defaults[:max_degree],
         min: 3,
         max: 10,
       },
       groups: {
         setting: :groups,
-        value: 1,
+        value: @custom_menu_defaults[:groups],
         min: 1,
         max: 10,
       },
@@ -40,6 +40,9 @@ class UntangleGame
       @difficulty_settings = @selectors.map do |_, data|
         [data[:setting], data[:value]]
       end.to_h
+
+      # Persist settings
+      @custom_menu_defaults = @difficulty_settings
 
       set_scene(:game)
 
