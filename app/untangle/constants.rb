@@ -1,5 +1,3 @@
-BEST_TIMES_FILE = "save_data/best_times"
-
 # Difficulty levels, based on the following factors:
 #
 #  - :node_count is the number of nodes in the graph

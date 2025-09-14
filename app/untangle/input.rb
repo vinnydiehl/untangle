@@ -77,22 +77,7 @@ class UntangleGame
           # Win condition
           if @game_solved
             @timer_end ||= actual_time(@timer)
-
-            # Keep track of best time (unless on a custom difficulty)
-            unless @difficulty == :custom
-              if (best_time = @best_times[@difficulty])
-                if @timer_end < best_time
-                  @new_best_time = true
-                  @best_times[@difficulty] = @timer_end
-                  save_best_times
-                end
-              else
-                # No current best time, save it, but we don't want to
-                # display the "new best time" message
-                @best_times[@difficulty] = @timer_end
-                save_best_times
-              end
-            end
+            handle_best_times_on_win
           end
 
           play_sound(@game_solved ? :win : :place) if @dragging_selection

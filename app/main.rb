@@ -3,7 +3,7 @@ SCENES = %w[main_menu custom_menu game pause_menu].freeze
 require "lib/union_find/union_find.rb"
 %w[array hash string symbol].each { |f| require "lib/core_ext/#{f}.rb" }
 
-%w[colors constants generate input
+%w[colors constants best_times generate input
    menu movement selection untangle].each { |f| require "app/untangle/#{f}.rb" }
 
 %w[scenes render].each { |dir| SCENES.each { |f| require "app/untangle/#{dir}/#{f}.rb" } }

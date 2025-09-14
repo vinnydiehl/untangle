@@ -70,10 +70,13 @@ class UntangleGame
 
     # "New best time" message
     if @new_best_time
+      mode = @difficulty == :custom ? "this custom"
+                                    : @difficulty.to_capitalized_str
+
       @primitives << {
         x: @screen_width - TEXT_PADDING,
         y: @screen_height - TEXT_PADDING,
-        text: "New best time for #{@difficulty.to_capitalized_str} mode!",
+        text: "New best time for #{mode} mode!",
         size_enum: NEW_BEST_TIME_MESSAGE_SIZE,
         alignment_enum: 2,
         r: 255, g: 255, b: 255,
