@@ -9,7 +9,7 @@ class UntangleGame
       },
       connectivity: {
         setting: :max_degree,
-        value: 3,
+        value: 4,
         min: 3,
         max: 10,
       },
