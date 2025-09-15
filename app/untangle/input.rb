@@ -72,15 +72,25 @@ class UntangleGame
             @selection_orig_pos[i] = @nodes[i]
           end
 
-          @game_solved = intersecting_edges.empty?
+          sound = :place
+          orig_groups_solved = @groups_solved.size
+          @groups_solved = groups_solved
+          if @groups_solved.size > orig_groups_solved
+            sound = :group_solve
+          elsif @groups_solved.size < orig_groups_solved
+            sound = :group_unsolve
+          end
+
+          @game_solved = @groups_solved.size == @difficulty_settings[:groups]
 
           # Win condition
           if @game_solved
             @timer_end ||= actual_time(@timer)
             handle_best_times_on_win
+            sound = :win
           end
 
-          play_sound(@game_solved ? :win : :place) if @dragging_selection
+          play_sound(sound) if @dragging_selection
         end
 
         @dragging_selection = false

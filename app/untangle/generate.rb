@@ -1,19 +1,41 @@
 class UntangleGame
   def generate_game
-    # Generate `groups` number of graphs, spaced evenly across the screen.
     nodes_groups, edges_groups = [], []
-    groups.times do |i|
-      size = { w: @screen_width / groups, h: @screen_height }
 
-      nodes_groups << generate_nodes(ox: i * size[:w], oy: 0, **size)
-      edges_groups << generate_edges(nodes_groups.last)
+    if groups < 4
+      # Simple single-row layout
+      groups.times do |i|
+        size = { w: @screen_width / groups, h: @screen_height }
+        nodes_groups << generate_nodes(ox: i * size[:w], oy: 0, **size)
+        edges_groups << generate_edges(nodes_groups.last)
+      end
+    else
+      # Grid layout with 2 rows
+      top_count = (groups / 2).ceil
+      bottom_count = groups - top_count
+
+      row_heights = [@screen_height / 2, @screen_height / 2]
+
+      [[top_count, 0], [bottom_count, 1]].each do |count, row|
+        next if count == 0
+
+        size = { w: @screen_width / count, h: row_heights[row] }
+
+        count.times do |i|
+          nodes_groups << generate_nodes(
+            ox: i * size[:w],
+            oy: row * size[:h],
+            **size,
+          )
+          edges_groups << generate_edges(nodes_groups.last)
+        end
+      end
     end
 
-    # Place them into the main graph
+    # Place into main graph
     @nodes, @edges = [], []
     nodes_groups.zip(edges_groups).each_with_index do |(nodes, edges), i|
       @nodes += nodes
-      # Increment the indices to their new location in @nodes
       @edges += edges.map { |e| e.map { |n| n + (node_count * i) } }
     end
 
@@ -248,11 +270,11 @@ class UntangleGame
   end
 
   # Returns an array of all edges which intersect another edge.
-  def intersecting_edges(nodes = @nodes)
-    @edges.combination(2)
-          .select { |e1, e2| intersect?(e1, e2, nodes: nodes) }
-          .flatten(1)
-          .uniq
+  def intersecting_edges(nodes = @nodes, edges = @edges)
+    edges.combination(2)
+         .select { |e1, e2| intersect?(e1, e2, nodes: nodes) }
+         .flatten(1)
+         .uniq
   end
 
   def shuffle_nodes

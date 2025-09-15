@@ -1,7 +1,5 @@
 class UntangleGame
   def game_init
-    @game_solved = false
-
     if @difficulty == :custom
       # If the custom difficulty is the same as one of the preset difficulties,
       # let's officially change the difficulty setting to that, so that if
@@ -13,6 +11,9 @@ class UntangleGame
       # We're using a preset difficulty, import that difficulty's settings
       @difficulty_settings = DIFFICULTY[@difficulty]
     end
+
+    @game_solved = false
+    @groups_solved = []
 
     @timer = 0
     @timer_end = nil

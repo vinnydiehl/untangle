@@ -127,7 +127,7 @@ class UntangleGame
   end
 
   def render_nodes
-    @nodes.each_index { |i| render_node(i, @game_solved ? :solved : nil) }
+    @nodes.each_index { |i| render_node(i) }
   end
 
   def render_connected_nodes
@@ -142,7 +142,11 @@ class UntangleGame
 
   def render_node(i, modifier = nil)
     filename = "node"
-    filename += "_#{modifier}" if modifier
+    if modifier
+      filename += "_#{modifier}"
+    elsif @groups_solved.include?(group_index(i))
+      filename += "_solved"
+    end
 
     @primitives << {
       **node_rect(@nodes[i]),
