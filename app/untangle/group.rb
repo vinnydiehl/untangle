@@ -14,25 +14,16 @@ class UntangleGame
     (start...(start + @difficulty_settings[:node_count])).to_a
   end
 
-  # Checks whether or not the given group is fully solved:
-  #  * No intersections within the group
-  #  * No intersections with edges from other groups
+  # Checks whether or not the given group is fully solved (no
+  # intersections with any edge)
   def group_solved?(group_i)
     group_nodes_i = group_nodes(group_i)
 
-    # Edges where both endpoints are in this group
-    group_edges = @edges.select do |(a, b)|
-      group_nodes_i.include?(a) && group_nodes_i.include?(b)
-    end
+    group_edges = @edges.select { |edge| edge.all? { |n| group_nodes_i.include?(n) } }
 
-    # If *any* group edge intersects with *any* edge in the graph, it's not solved
-    group_edges.each do |ge|
-      @edges.each do |e|
-        return false if ge != e && intersect?(ge, e, nodes: @nodes)
-      end
+    group_edges.none? do |ge|
+      @edges.any? { |e| ge != e && intersect?(ge, e, nodes: @nodes) }
     end
-
-    true
   end
 
   # Returns an array of group indices that are solved.
